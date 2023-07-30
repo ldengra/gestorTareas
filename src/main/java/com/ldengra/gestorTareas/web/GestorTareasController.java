@@ -3,31 +3,50 @@ package com.ldengra.gestorTareas.web;
 import com.ldengra.gestorTareas.entity.TareaEntity;
 import com.ldengra.gestorTareas.entity.UsuarioEntity;
 import com.ldengra.gestorTareas.service.GestorTareasService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+
 
 @RestController
 @RequestMapping("api")
 public class GestorTareasController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GestorTareasController.class);
     @Autowired
     private GestorTareasService service;
-
 
     //TAREA
     @GetMapping("/getTarea/{id}")
     public ResponseEntity<TareaEntity> getTarea(@PathVariable Long id){
 
-        TareaEntity tarea;
+        List<String> errorParams = new ArrayList<>();
+        if (Objects.isNull(id)){
+            errorParams.add("id is null");
+        }
+        if (!errorParams.isEmpty()){
+            return (ResponseEntity<TareaEntity>) ResponseEntity.badRequest();
+        }
 
-        tarea = service.getTarea(id);
+        TareaEntity tarea = null;
+        try{
+            tarea = service.getTarea(id);
+        }catch (Exception e){
+            LOGGER.error("El id no existe");
+        }
 
-        return ResponseEntity.ok().body(tarea);
+        if (tarea == null){
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok().body(tarea);
+        }
     }
 
     @PostMapping("/postTarea")
@@ -48,7 +67,6 @@ public class GestorTareasController {
     }
 
     @DeleteMapping("/deleteTarea/{id}")
-    @PutMapping("/putTarea/{id}")
     public ResponseEntity<Void> deleteTarea(@PathVariable Long id){
 
         service.deleteTarea(id);
@@ -75,20 +93,31 @@ public class GestorTareasController {
     }
 
     @PutMapping("/putUsuario")
-    public ResponseEntity<Void> putUsuario(@RequestBody UsuarioEntity usuario){
+    public ResponseEntity<Void> putUsuario(@PathVariable Long id, @RequestBody UsuarioEntity usuario){
 
+        service.putUsuario(id,usuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/deleteUsuario/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id){
+
+        service.deleteUsuario(id);
 
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     //LISTADO TAREAS
-    @GetMapping("/getListadoTareas")
-    public ResponseEntity<List<TareaEntity>> getListaTareas(){
+    @GetMapping("/getListadoTareas/{id}")
+    public ResponseEntity<List<TareaEntity>> getListaTareas(@PathVariable Long id){
 
-        List<TareaEntity> listaTareas = service.getListaTareas();
+        List<TareaEntity> listaTareas = service.getListaTareas(id);
 
 
         return ResponseEntity.ok().body(listaTareas);
     }
+
+
 }

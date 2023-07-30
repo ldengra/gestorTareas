@@ -46,4 +46,13 @@ public class TareaEntityService {
 
         repository.deleteById(id);
     }
+
+    public List<TareaEntity> findAllByUser(Long userId){
+
+        List<TareaEntity> listaTareas = new ArrayList<>();
+
+        listaTareas = repository.findAllByUser(userId);
+
+        return listaTareas;
+    }
 }

@@ -29,4 +29,8 @@ public class UsuarioEntityService {
             e.printStackTrace();
         }
     }
+
+    public void deleteById(Long id){
+        repository.deleteById(id);
+    }
 }

@@ -24,9 +24,9 @@ public class GestorTareasService {
 
     }
 
-    public List<TareaEntity> getListaTareas(){
+    public List<TareaEntity> getListaTareas(Long id){
         List<TareaEntity> listaTareas = new ArrayList<>();
-        listaTareas = tareaEntityService.findAll();
+        listaTareas = tareaEntityService.findAllByUser(id);
 
         return listaTareas;
     }
@@ -72,5 +72,21 @@ public class GestorTareasService {
 
         usuarioEntityService.save(usuario);
 
+    }
+
+    public void putUsuario(Long id, UsuarioEntity usuario){
+
+        UsuarioEntity response = getUsuario(id);
+
+        response.setUsername(usuario.getUsername());
+        response.setPassword(usuario.getPassword());
+        response.setEmail(usuario.getEmail());
+
+        usuarioEntityService.save(response);
+
+    }
+
+    public void deleteUsuario(Long id){
+        usuarioEntityService.deleteById(id);
     }
 }

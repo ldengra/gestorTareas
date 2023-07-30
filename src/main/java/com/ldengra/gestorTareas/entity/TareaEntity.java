@@ -32,6 +32,7 @@ public class TareaEntity {
     @Column(name = "ESTADO")
     private String status;
 
-    @Column(name = "ASIGNADO")
-    private String assignee;
+    @JoinColumn(name = "usuario_id")
+    @ManyToOne
+    private UsuarioEntity assignee;
 }
